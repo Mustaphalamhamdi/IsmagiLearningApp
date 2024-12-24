@@ -1,0 +1,203 @@
+﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@model IsmagiLearningApp.Models.Level
+
+@{
+    ViewData["Title"] = "Level Details - " + Model.Title;
+    var antiforgeryToken = HttpContextAccessor.HttpContext != null
+        ? Antiforgery.GetAndStoreTokens(HttpContextAccessor.HttpContext).RequestToken
+        : string.Empty;
+}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12 text-center mb-4">
+            <h1>@Model.Title</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">Level Details</h2>
+                    <p class="card-text"><strong>Description:</strong> @Model.Description</p>
+                    <p class="card-text"><strong>Programming Language:</strong> @Model.ProgrammingLanguage.Name</p>
+                    <p class="card-text"><strong>Hint:</strong> @Model.Hints</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <div id="editor-container" style="height: 400px; border: 1px solid #ddd;"></div>
+                    <button class="btn btn-primary mt-3" onclick="runCode()">Run</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h2>Output</h2>
+                    <pre id="output" class="bg-light p-3 border"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h2>Verification</h2>
+                    <pre id="verification" class="bg-light p-3 border"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4" id="solution-section" style="display: none;">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h2>Solution</h2>
+                    <p>The solution should look like this:</p>
+                    <pre id="solution" class="bg-light p-3 border">@Html.Raw(Model.ExpectedSolution.Replace("\n", "<br>").Replace("\t", "&nbsp;&nbsp;"))</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.30.1/min/vs/loader.min.js"></script>
+    <script>
+        // Initialize editor with Monaco Editor
+        let editor;
+        let runAttempts = 0;
+        let functionPattern = new RegExp(`@Model.VerificationPattern`);
+
+        document.addEventListener('DOMContentLoaded', function () {
+            require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.30.1/min/vs' } });
+            require(['vs/editor/editor.main'], function () {
+                editor = monaco.editor.create(document.getElementById('editor-container'), {
+                    value: `@Model.InitialCode`,
+                    language: getEditorLanguage('@Model.ProgrammingLanguage.Name'),
+                    theme: 'vs-dark',
+                    automaticLayout: true,
+                    minimap: { enabled: true },
+                    scrollbar: {
+                        vertical: 'visible',
+                        horizontal: 'visible'
+                    },
+                    suggestOnTriggerCharacters: true,
+                    quickSuggestions: true,
+                    wordBasedSuggestions: true,
+                    parameterHints: true,
+                    formatOnType: true,
+                    formatOnPaste: true,
+                    folding: true,
+                    renderWhitespace: 'all',
+                    tabSize: 4
+                });
+            });
+        });
+
+        function getEditorLanguage(programmingLanguage) {
+            switch (programmingLanguage.toLowerCase()) {
+                case 'javascript':
+                    return 'javascript';
+                case 'csharp':
+                    return 'csharp';
+                case 'python':
+                    return 'python';
+                case 'java':
+                    return 'java';
+                case 'html':
+                    return 'html';
+                case 'css':
+                    return 'css';
+                case 'cpp':
+                    return 'cpp';
+                case 'php':
+                    return 'php';
+                case 'ruby':
+                    return 'ruby';
+                case 'swift':
+                    return 'swift';
+                case 'typescript':
+                    return 'typescript';
+                case 'go':
+                    return 'go';
+                case 'kotlin':
+                    return 'kotlin';
+                case 'r':
+                    return 'r';
+                case 'rust':
+                    return 'rust';
+                case 'sql':
+                    return 'sql';
+                default:
+                    return 'plaintext';
+            }
+        }
+
+        function runCode() {
+            const userCode = editor.getValue();
+            const outputElement = document.getElementById('output');
+            const verificationElement = document.getElementById('verification');
+
+            // Clear previous output and verification
+            outputElement.innerText = '';
+            verificationElement.innerText = '';
+
+            // Override console.log to capture output
+            const capturedOutput = [];
+            const originalConsoleLog = console.log;
+            console.log = function (message) {
+                capturedOutput.push(message);
+                originalConsoleLog.apply(console, arguments);
+            };
+
+            try {
+                new Function(userCode)();
+                const finalOutput = capturedOutput.join('\n');
+                outputElement.innerText = finalOutput;
+                verifyCode(userCode);
+            } catch (error) {
+                outputElement.innerText = `Error: ${error.message}\n${error.stack}`;
+                verificationElement.innerText = 'Error in code execution.';
+            }
+
+            // Restore console.log
+            console.log = originalConsoleLog;
+        }
+
+        function verifyCode(code) {
+            const verificationElement = document.getElementById('verification');
+            const solutionSection = document.getElementById('solution-section');
+
+            if (functionPattern.test(code)) {
+                verificationElement.innerText = 'Test Case 1: Passed\nCongratulations! Task solved.';
+                runAttempts = 0; // Reset attempts on success
+            } else {
+                runAttempts++;
+                verificationElement.innerText = 'Test Case 1: Failed. Ensure you have a function named "greet" that prints "Hello, World!" using console.log and that the function is called.';
+
+                // Show solution section after 3 failed attempts
+                if (runAttempts >= 3) {
+                    solutionSection.style.display = 'block';
+                }
+            }
+        }
+
+        function updateSolutionPattern(newPattern) {
+            functionPattern = new RegExp(newPattern);
+        }
+    </script>
+}
+

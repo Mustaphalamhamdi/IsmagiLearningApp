@@ -1,0 +1,80 @@
+﻿@model IsmagiLearningApp.Models.Level
+
+<div class="container mt-4">
+    <h2>Create New Level</h2>
+    <h4 class="text-muted">@ViewBag.Language.Name</h4>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="CreateLevel" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="ProgrammingLanguageId" />
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label">Level Title</label>
+                            <input asp-for="Title" class="form-control" required />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="3" required></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DifficultyId" class="form-label">Difficulty Level</label>
+                            <select asp-for="DifficultyId" class="form-select" asp-items="ViewBag.Difficulties" required>
+                                <option value="">-- Select Difficulty --</option>
+                            </select>
+                            <span asp-validation-for="DifficultyId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="OrderIndex" class="form-label">Order Index</label>
+                            <input asp-for="OrderIndex" class="form-control" type="number" min="1" required />
+                            <span asp-validation-for="OrderIndex" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="InitialCode" class="form-label">Initial Code</label>
+                            <textarea asp-for="InitialCode" class="form-control" rows="5" required></textarea>
+                            <span asp-validation-for="InitialCode" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ExpectedSolution" class="form-label">Expected Solution</label>
+                            <textarea asp-for="ExpectedSolution" class="form-control" rows="5" required></textarea>
+                            <span asp-validation-for="ExpectedSolution" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="VerificationPattern" class="form-label">Verification Pattern</label>
+                            <input asp-for="VerificationPattern" class="form-control" required />
+                            <span asp-validation-for="VerificationPattern" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Hints" class="form-label">Hints</label>
+                            <textarea asp-for="Hints" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Hints" class="text-danger"></span>
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">Create Level</button>
+                            <a asp-action="ManageLevels"
+                               asp-route-languageId="@Model.ProgrammingLanguageId"
+                               class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

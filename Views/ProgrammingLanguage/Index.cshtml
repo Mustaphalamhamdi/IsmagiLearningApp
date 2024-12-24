@@ -1,0 +1,64 @@
+﻿@model IEnumerable<IsmagiLearningApp.Models.ProgrammingLanguage>
+
+<div class="container mt-4">
+    <h2>Available Programming Languages</h2>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var language in Model)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@language.Name</h5>
+                        <p class="card-text">@language.Description</p>
+
+                        <!-- Display available difficulty levels -->
+                        <div class="difficulty-levels mb-3">
+                            <h6>Available Difficulty Levels:</h6>
+                            @foreach (var difficulty in language.DifficultyLevels.OrderBy(d => d.DisplayOrder))
+                            {
+                                @if (difficulty.IsAvailable)
+                                {
+                                    <span class="badge bg-primary me-2">@difficulty.Name</span>
+                                }
+                            }
+                        </div>
+
+                        <!-- Progress section if user is logged in -->
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <div class="progress mb-3" style="height: 20px;">
+                                <div class="progress-bar" role="progressbar" style="width: 0%;"
+                                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                    0% Complete
+                                </div>
+                            </div>
+                        }
+
+                        <a asp-controller="Dashboard"
+                           asp-action="Difficulties"
+                           asp-route-languageId="@language.Id"
+                           class="btn btn-primary">
+                            Start Learning
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .difficulty-levels .badge {
+        font-size: 0.8rem;
+    }
+</style>
