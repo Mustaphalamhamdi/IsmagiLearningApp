@@ -1,0 +1,49 @@
+﻿@model IEnumerable<ProgrammingLanguage>
+
+<div class="container mt-4">
+    <h2>Your Learning Dashboard</h2>
+    <p class="lead">Choose a programming language to start learning</p>
+
+    <div class="row">
+        @foreach (var language in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@language.Name</h5>
+                        <p class="card-text">@language.Description</p>
+
+                        <div class="mb-3">
+                            <h6>Available Difficulty Levels:</h6>
+                            @foreach (var difficulty in language.DifficultyLevels.Where(d => d.IsAvailable).OrderBy(d => d.DisplayOrder))
+                            {
+                                <span asp-action="Difficulties" asp-route-languageId="@difficulty.Id" class="badge bg-primary me-2">@difficulty.Name</span>
+                            }
+                        </div>
+
+                        <a asp-action="Difficulties" 
+                           asp-route-languageId="@language.Id" 
+                           class="btn btn-primary">Start Learning</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.2s;
+        border-radius: 8px;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .badge {
+        font-size: 0.8rem;
+        padding: 0.5em 1em;
+    }
+</style>

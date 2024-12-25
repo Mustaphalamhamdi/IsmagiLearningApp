@@ -1,0 +1,62 @@
+﻿@model ProgrammingLanguage
+
+<div class="container mt-4">
+    <h2>Manage Difficulty Levels - @Model.Name</h2>
+
+    <div class="mb-3">
+        <a asp-action="CreateDifficulty" asp-route-languageId="@Model.Id"
+           class="btn btn-primary">Add New Difficulty Level</a>
+    </div>
+
+    <div class="row">
+        @foreach (var difficulty in Model.DifficultyLevels.OrderBy(d => d.DisplayOrder))
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@difficulty.Name</h5>
+                        <p class="card-text">@difficulty.Description</p>
+                        <p class="small text-muted">Display Order: @difficulty.DisplayOrder</p>
+
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox"
+                            @(difficulty.IsAvailable ? "checked" : "")
+                                   onchange="updateAvailability(@difficulty.Id, this.checked)">
+                            <label class="form-check-label">Available</label>
+                        </div>
+
+                        <div>
+                            <a asp-action="EditDifficulty" asp-route-id="@difficulty.Id"
+                               class="btn btn-sm btn-outline-primary">Edit</a>
+
+                            <form asp-action="DeleteDifficulty" asp-route-id="@difficulty.Id" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this difficulty level?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function updateAvailability(id, isAvailable) {
+            fetch('/Admin/UpdateDifficultyAvailability', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify({ difficultyId: id, isAvailable: isAvailable })
+            });
+        }
+
+        function deleteDifficulty(id) {
+            if (confirm('Are you sure you want to delete this difficulty level?')) {
+                document.getElementById('deleteForm_' + id).submit();
+            }
+        }
+    </script>
+}

@@ -1,0 +1,70 @@
+﻿@using IsmagiLearningApp.Models.ViewModels
+@model ManageLevelsViewModel
+
+<div class="container mt-4">
+    <h2>Manage Levels - @Model.Language.Name</h2>
+
+    <div class="mb-3">
+        <a asp-action="CreateLevel" asp-route-languageId="@Model.Language.Id"
+           class="btn btn-primary">Add New Level</a>
+        <a asp-action="Index" class="btn btn-secondary">Back to Languages</a>
+    </div>
+
+    @foreach (var difficultyGroup in Model.LevelsByDifficulty)
+    {
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>@difficultyGroup.Key Level</h4>
+            </div>
+            <div class="card-body">
+                @if (difficultyGroup.Value.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Order</th>
+                                    <th>Title</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var level in difficultyGroup.Value)
+                                {
+                                    <tr>
+                                        <td>@level.OrderIndex</td>
+                                        <td>@level.Title</td>
+                                        <td>@level.Description</td>
+                                        <td>
+                                            <a asp-action="EditLevel" asp-route-id="@level.Id"
+                                               class="btn btn-sm btn-primary">Edit</a>
+                                            <button onclick="deleteLevel(@level.Id)"
+                                                    class="btn btn-sm btn-danger">
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">No levels created for this difficulty yet.</p>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function deleteLevel(id) {
+            if (confirm('Are you sure you want to delete this level?')) {
+                window.location.href = '@Url.Action("DeleteLevel")?id=' + id;
+            }
+        }
+    </script>
+}

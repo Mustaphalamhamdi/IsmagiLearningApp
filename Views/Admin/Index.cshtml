@@ -1,0 +1,105 @@
+﻿@using IsmagiLearningApp.Models.ViewModels
+@model AdminDashboardViewModel
+<div class="container mt-4">
+    <h2>Admin Dashboard</h2>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Users</h5>
+                    <h2>@Model.TotalUsers</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Programming Languages</h5>
+                    <h2>@Model.TotalLanguages</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Levels</h5>
+                    <h2>@Model.TotalLevels</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Programming Languages Section -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Programming Languages</h5>
+                    <a asp-action="CreateLanguage" class="btn btn-primary btn-sm">Add New</a>
+                </div>
+                <div class="card-body">
+                    @foreach (var language in Model.Languages)
+                    {
+                        <div class="border-bottom p-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">@language.Name</h6>
+                                    <small class="text-muted">@language.DifficultyLevels.Count() Difficulty Levels</small>
+                                </div>
+                                <div>
+                                    <a asp-action="ManageDifficulties"
+                                       asp-route-languageId="@language.Id"
+                                       class="btn btn-sm btn-outline-primary">Manage Difficulties</a>
+                                    <a asp-action="ManageLevels"
+                                       asp-route-languageId="@language.Id"
+                                       class="btn btn-sm btn-outline-secondary">Manage Levels</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @foreach (var language in Model.Languages)
+                    {
+                        <div>
+                            <h3>@language.Name</h3>
+                            <p>@language.Description</p>
+                            <a asp-action="EditLanguage" asp-route-id="@language.Id" class="btn btn-primary">Edit</a>
+                            <form asp-action="DeleteLanguage" asp-route-id="@language.Id" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this language?');">Delete</button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentActivities.Any())
+                    {
+                        foreach (var activity in Model.RecentActivities)
+                        {
+                            <div class="border-bottom p-2">
+                                <h6 class="mb-1">Level Completed</h6>
+                                <p class="mb-1">@activity.Level.ProgrammingLanguage.Name - @activity.Level.Title</p>
+                                <small class="text-muted">
+                                    @activity.CompletionDate?.ToString("MMM dd, yyyy HH:mm")
+                                </small>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted">No recent activity</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

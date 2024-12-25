@@ -1,0 +1,13 @@
+﻿@model IEnumerable<IsmagiLearningApp.Models.Level>
+
+<h2>Levels</h2>
+<ul>
+    @foreach (var level in Model)
+    {
+        <li>
+            <a asp-controller="UserDashboard" asp-action="LevelDetails" asp-route-levelId="@level.Id">
+                @level.Title
+            </a>
+        </li>
+    }
+</ul>
