@@ -1,105 +1,346 @@
 ﻿@using IsmagiLearningApp.Models.ViewModels
 @model AdminDashboardViewModel
-<div class="container mt-4">
-    <h2>Admin Dashboard</h2>
 
-    <!-- Statistics Cards -->
+<div class="admin-dashboard mb-5">
+    <div class="dashboard-header mb-4">
+        <h2 class="dashboard-title">Admin Dashboard</h2>
+    </div>
     <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Total Users</h5>
-                    <h2>@Model.TotalUsers</h2>
+        <div class="col-12 d-flex justify-content-end">
+            <a asp-action="CreateAdmin" class="btn btn-create">
+                Add New Admin
+            </a>
+        </div>
+    </div>
+    <div class="stats-grid mb-5">
+        <div class="stat-card users">
+            <div class="stat-content">
+                <div class="stat-info">
+                    <span class="stat-label">Total Users</span>
+                    <h2 class="stat-value">@Model.TotalUsers</h2>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card bg-success text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Programming Languages</h5>
-                    <h2>@Model.TotalLanguages</h2>
+
+        <div class="stat-card languages">
+            <div class="stat-content">
+                <div class="stat-info">
+                    <span class="stat-label">Programming Languages</span>
+                    <h2 class="stat-value">@Model.TotalLanguages</h2>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card bg-info text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Total Levels</h5>
-                    <h2>@Model.TotalLevels</h2>
+
+        <div class="stat-card levels">
+            <div class="stat-content">
+                <div class="stat-info">
+                    <span class="stat-label">Total Levels</span>
+                    <h2 class="stat-value">@Model.TotalLevels</h2>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Programming Languages Section -->
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
+    <!-- Main Content Grid -->
+    <div class="dashboard-grid">
+        <!-- Programming Languages Section -->
+        <div class="dashboard-card languages-section">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Programming Languages</h5>
-                    <a asp-action="CreateLanguage" class="btn btn-primary btn-sm">Add New</a>
+                    <a asp-action="CreateLanguage" class="btn btn-create">Add New</a>
                 </div>
-                <div class="card-body">
-                    @foreach (var language in Model.Languages)
-                    {
-                        <div class="border-bottom p-2">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="mb-1">@language.Name</h6>
-                                    <small class="text-muted">@language.DifficultyLevels.Count() Difficulty Levels</small>
-                                </div>
-                                <div>
-                                    <a asp-action="ManageDifficulties"
-                                       asp-route-languageId="@language.Id"
-                                       class="btn btn-sm btn-outline-primary">Manage Difficulties</a>
-                                    <a asp-action="ManageLevels"
-                                       asp-route-languageId="@language.Id"
-                                       class="btn btn-sm btn-outline-secondary">Manage Levels</a>
-                                </div>
-                            </div>
+            </div>
+            <div class="card-body">
+                @foreach (var language in Model.Languages)
+                {
+                    <div class="language-item">
+                        <div class="language-info">
+                            <h6 class="language-name">@language.Name</h6>
+                            <span class="difficulty-count">
+                                @language.DifficultyLevels.Count() Difficulty Levels
+                            </span>
                         </div>
-                    }
-                    @foreach (var language in Model.Languages)
-                    {
-                        <div>
-                            <h3>@language.Name</h3>
-                            <p>@language.Description</p>
-                            <a asp-action="EditLanguage" asp-route-id="@language.Id" class="btn btn-primary">Edit</a>
-                            <form asp-action="DeleteLanguage" asp-route-id="@language.Id" method="post" style="display:inline;">
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this language?');">Delete</button>
+                        <div class="language-actions">
+                            <a asp-action="ManageDifficulties"
+                               asp-route-languageId="@language.Id"
+                               class="btn btn-action">
+                                Difficulties
+                            </a>
+                            <a asp-action="ManageLevels"
+                               asp-route-languageId="@language.Id"
+                               class="btn btn-action">
+                                Levels
+                            </a>
+                            <a asp-action="EditLanguage" 
+                               asp-route-id="@language.Id" 
+                               class="btn btn-action">
+                                Edit
+                            </a>
+                            <form asp-action="DeleteLanguage" asp-route-id="@language.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-delete" 
+                                        onclick="return confirm('Are you sure you want to delete this language?');">
+                                    Delete
+                                </button>
                             </form>
                         </div>
-                    }
-                </div>
+                    </div>
+                }
             </div>
         </div>
 
-        <!-- Recent Activity -->
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Recent Activity</h5>
-                </div>
-                <div class="card-body">
-                    @if (Model.RecentActivities.Any())
+        <!-- Recent Activity Section -->
+        <div class="dashboard-card activity-section">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.RecentActivities.Any())
+                {
+                    foreach (var activity in Model.RecentActivities)
                     {
-                        foreach (var activity in Model.RecentActivities)
-                        {
-                            <div class="border-bottom p-2">
-                                <h6 class="mb-1">Level Completed</h6>
-                                <p class="mb-1">@activity.Level.ProgrammingLanguage.Name - @activity.Level.Title</p>
-                                <small class="text-muted">
+                        <div class="activity-item">
+                            <div class="activity-details">
+                                <h6 class="activity-title">Level Completed</h6>
+                                <p class="activity-info">
+                                    @activity.Level.ProgrammingLanguage.Name - @activity.Level.Title
+                                </p>
+                                <span class="activity-date">
                                     @activity.CompletionDate?.ToString("MMM dd, yyyy HH:mm")
-                                </small>
+                                </span>
                             </div>
-                        }
+                        </div>
                     }
-                    else
-                    {
-                        <p class="text-muted">No recent activity</p>
-                    }
-                </div>
+                }
+                else
+                {
+                    <div class="no-activity">
+                        <p>No recent activity</p>
+                    </div>
+                }
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .admin-dashboard {
+        padding: 2rem 0;
+        min-height: calc(100vh - 260px);
+    }
+
+    .dashboard-header {
+        text-align: center;
+    }
+
+    .btn-create {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+    }
+
+        .btn-create:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+            color: white;
+        }
+    .dashboard-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        border: 1px solid #e2e8f0;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-content {
+        text-align: center;
+    }
+
+    .stat-label {
+        color: #64748b;
+        font-size: 0.9rem;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0;
+        color: #0f172a;
+    }
+
+    /* Dashboard Grid */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .dashboard-card {
+        background: white;
+        border-radius: 1rem;
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+    }
+
+    .card-header {
+        padding: 1.25rem;
+        background: white;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .card-body {
+        padding: 1.25rem;
+    }
+
+    /* Language Items */
+    .language-item {
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+    }
+
+    .language-item:hover {
+        background: #f8fafc;
+    }
+
+    .language-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 0.5rem;
+    }
+
+    .difficulty-count {
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
+    .language-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    /* Buttons */
+    .btn-create {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+    }
+
+    .btn-create:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        color: white;
+    }
+
+    .btn-action {
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.9rem;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+        color: #64748b;
+        background: white;
+    }
+
+    .btn-action:hover {
+        background: #f8fafc;
+        border-color: #6366f1;
+        color: #6366f1;
+    }
+
+    .btn-delete {
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.9rem;
+        color: #ef4444;
+        background: white;
+        border: 1px solid #fecaca;
+        transition: all 0.3s ease;
+    }
+
+    .btn-delete:hover {
+        background: #fef2f2;
+        border-color: #ef4444;
+    }
+
+    /* Activity Items */
+    .activity-item {
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .activity-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: #0f172a;
+    }
+
+    .activity-info {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .activity-date {
+        color: #94a3b8;
+        font-size: 0.8rem;
+        display: block;
+    }
+
+    .no-activity {
+        text-align: center;
+        padding: 2rem;
+        color: #64748b;
+    }
+
+    @@media (max-width: 768px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .language-actions {
+            flex-wrap: wrap;
+        }
+
+        .btn-action, .btn-delete {
+            width: 100%;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+        }
+    }
+</style>

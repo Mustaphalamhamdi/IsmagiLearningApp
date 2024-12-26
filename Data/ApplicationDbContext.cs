@@ -16,6 +16,20 @@ namespace IsmagiLearningApp.Data
         public DbSet<Level> Levels { get; set; }
         public DbSet<UserProgress> UserProgress { get; set; }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer("DefaultConnection", options =>
+                {
+                    options.EnableRetryOnFailure(
+                        maxRetryCount: 5,
+                        maxRetryDelay: TimeSpan.FromSeconds(30),
+                        errorNumbersToAdd: null);
+                });
+            }
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -51,7 +65,5 @@ namespace IsmagiLearningApp.Data
                 .WithMany()
                 .HasForeignKey(up => up.LevelId);
         }
-
-
     }
 }

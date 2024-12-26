@@ -1,57 +1,69 @@
 ﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @model IsmagiLearningApp.Models.Level
-
 @{
     ViewData["Title"] = "Level - " + Model.Title;
-
     var antiforgeryToken = HttpContextAccessor.HttpContext != null
-
         ? Antiforgery.GetAndStoreTokens(HttpContextAccessor.HttpContext).RequestToken
-
         : string.Empty;
 }
 
-<div class="container-fluid mt-4">
-    <div class="row">
+<div class="level-details-container mt-4">
+    <div class="row g-4">
         <!-- Left side - Instructions and Description -->
         <div class="col-md-4">
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
+            <div class="instruction-card mb-4">
+                <div class="card-header">
                     <h4 class="mb-0">@Model.Title</h4>
                 </div>
                 <div class="card-body">
-                    <h5>Description:</h5>
-                    <p>@Model.Description</p>
+                    <div class="mb-4">
+                        <h5 class="section-title">Description</h5>
+                        <p class="description-text">@Model.Description</p>
+                    </div>
 
-                    <h5 class="mt-4">Task Requirements:</h5>
-                    <ul>
-                        <li>Language: @Model.ProgrammingLanguage.Name</li>
-                        <li>Difficulty: @Model.Difficulty.Name</li>
-                    </ul>
+                    <div class="requirements-section mb-4">
+                        <h5 class="section-title">Task Requirements</h5>
+                        <div class="requirements-badges">
+                            <span class="requirement-badge language">
+                                <i class="bi bi-code-slash"></i>
+                                @Model.ProgrammingLanguage.Name
+                            </span>
+                            <span class="requirement-badge difficulty">
+                                <i class="bi bi-speedometer2"></i>
+                                @Model.Difficulty.Name
+                            </span>
+                        </div>
+                    </div>
 
-                    <div class="alert alert-info mt-4">
-                        <h5 class="alert-heading">💡 Hints:</h5>
-                        <p class="mb-0">@Model.Hints</p>
+                    <div class="hints-section">
+                        <h5 class="section-title">
+                            <i class="bi bi-lightbulb"></i> Hints
+                        </h5>
+                        <p class="hints-text">@Model.Hints</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Progress Card -->
             @if (ViewBag.Progress != null)
             {
-                <div class="card mb-4">
-                    <div class="card-header bg-info text-white">
+                <div class="progress-card">
+                    <div class="card-header">
                         <h5 class="mb-0">Your Progress</h5>
                     </div>
                     <div class="card-body">
-                        <p>Attempts: @ViewBag.Progress.AttemptCount</p>
+                        <div class="progress-item">
+                            <span class="progress-label">Attempts</span>
+                            <span class="progress-value">@ViewBag.Progress.AttemptCount</span>
+                        </div>
                         @if (ViewBag.Progress.IsCompleted)
-
                         {
-                            <div class="alert alert-success">
-                                <strong>Completed!</strong>
-                                <p class="mb-0">Completed on: @ViewBag.Progress.CompletionDate?.ToString("MMM dd, yyyy")</p>
+                            <div class="completion-badge">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <div class="completion-info">
+                                    <span class="completion-status">Completed!</span>
+                                    <span class="completion-date">@ViewBag.Progress.CompletionDate?.ToString("MMM dd, yyyy")</span>
+                                </div>
                             </div>
                         }
                     </div>
@@ -59,66 +71,63 @@
             }
         </div>
 
-        <!-- Right side - Code Editor and Output -->
         <div class="col-md-8">
-            <!-- Code Editor Section -->
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Code Editor</h5>
-                    <div>
-                        <button class="btn btn-primary me-2" onclick="runCode()">
-                            <i class="bi bi-play-fill"></i> Run Code
-                        </button>
-                        <button class="btn btn-success" onclick="submitSolution()">
-                            Submit Solution
+            <div class="editor-section card mb-4">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Code Editor</h5>
+                        <div class="editor-actions">
+                            <button class="btn btn-run me-2" onclick="runCode()">
+                                <i class="bi bi-play-fill"></i> Run Code
+                            </button>
+                            <button class="btn btn-submit" onclick="submitSolution()">
+                                <i class="bi bi-check2-circle"></i> Submit Solution
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="editor" class="code-editor"></div>
+                </div>
+            </div>
+
+            <div class="output-section card mb-4">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Output</h5>
+                        <button class="btn btn-clear" onclick="clearOutput()">
+                            <i class="bi bi-trash"></i> Clear
                         </button>
                     </div>
                 </div>
                 <div class="card-body">
-                    <div id="editor" style="height: 400px; border: 1px solid #ddd; border-radius: 4px;"></div>
+                    <pre id="output" class="output-display">// Your code output will appear here...</pre>
                 </div>
             </div>
 
-            <!-- Output Section -->
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Output</h5>
-                    <button class="btn btn-outline-secondary btn-sm" onclick="clearOutput()">
-                        Clear Output
-                    </button>
-                </div>
-                <div class="card-body">
-                    <pre id="output" class="bg-dark text-light p-3 rounded" style="min-height: 100px;">// Your code output will appear here...</pre>
-                </div>
-            </div>
-
-            <!-- Test Results -->
-            <div class="card mb-4">
+            <div class="verification-section card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">Verification Results</h5>
                 </div>
                 <div class="card-body">
-                    <div id="verificationResults">
-                        <!-- Results will be displayed here -->
-                    </div>
+                    <div id="verificationResults"></div>
                 </div>
             </div>
 
-            <!-- Solution Section (Hidden by default) -->
-            <div id="solutionSection" class="card mb-4" style="display: none;">
-                <div class="card-header bg-warning">
+            <div id="solutionSection" class="solution-section card mb-4" style="display: none;">
+                <div class="card-header">
                     <h5 class="mb-0">Solution Reference</h5>
                 </div>
                 <div class="card-body">
                     <p class="text-muted mb-3">Here's one way to solve this challenge:</p>
-                    <pre id="solution" class="bg-light p-3 rounded">@Model.ExpectedSolution</pre>
+                    <pre id="solution" class="solution-code">@Model.ExpectedSolution</pre>
                 </div>
             </div>
-            <!-- Next Level Button (Hidden by default) -->
-            <div id="nextLevelButton" class="text-center mb-4">
+
+            <div id="nextLevelButton" class="next-level-section text-center">
                 <a asp-action="LevelDetails"
                    asp-route-levelId="@(Model.Id + 1)"
-                   class="btn btn-lg btn-success">
+                   class="btn btn-next">
                     Continue to Next Level
                     <i class="bi bi-arrow-right"></i>
                 </a>
@@ -127,6 +136,170 @@
     </div>
 </div>
 
+<style>
+    .level-details-container {
+        --primary-color: #6366f1;
+        --secondary-color: #8b5cf6;
+        --success-color: #22c55e;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --text-color: #0f172a;
+        --text-muted: #64748b;
+        --border-color: #e2e8f0;
+        --surface-color: #ffffff;
+    }
+
+    /* Cards Styling */
+    .card {
+        background: var(--surface-color);
+        border-radius: 1rem;
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 1rem 1.5rem;
+        border-bottom: none;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Section Titles */
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 1rem;
+    }
+
+    /* Requirements Badges */
+    .requirements-badges {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .requirement-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: white;
+    }
+
+    .requirement-badge.language {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    }
+
+    .requirement-badge.difficulty {
+        background: linear-gradient(135deg, var(--warning-color), var(--danger-color));
+    }
+
+    /* Progress Section */
+    .progress-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .completion-badge {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: linear-gradient(135deg, var(--success-color), #16a34a);
+        color: white;
+        border-radius: 0.5rem;
+    }
+
+    /* Code Editor */
+    .code-editor {
+        height: 400px;
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-run {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border: none;
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, var(--success-color), #16a34a);
+        color: white;
+        border: none;
+    }
+
+    .btn-clear {
+        background: transparent;
+        border: 1px solid var(--border-color);
+    }
+
+    .btn-next {
+        background: linear-gradient(135deg, var(--success-color), #16a34a);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+    }
+
+    /* Output Display */
+    .output-display {
+        background: #1a1a1a;
+        color: #ffffff;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        min-height: 100px;
+        margin: 0;
+    }
+
+    /* Solution Code */
+    .solution-code {
+        background: #f8fafc;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin: 0;
+    }
+
+    @@media (max-width: 768px) {
+        .card-header {
+            padding: 1rem;
+        }
+
+        .card-body {
+            padding: 1rem;
+        }
+
+        .code-editor {
+            height: 300px;
+        }
+
+        .requirements-badges {
+            flex-direction: column;
+        }
+    }
+</style>
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
     <script>
@@ -134,47 +307,35 @@
         let runAttempts = 0;
         const maxAttempts = 3;
 
-        function getLowerCaseLanguage(ProgrammingLanguage) {
-            // Convert language name to lowercase and handle common variations
-            const lang = ProgrammingLanguage.toLowerCase().trim();
+        require.config({
+            paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }
+        });
 
-            switch (lang) {
-                case 'javascript':
-                case 'js':
-                    return 'javascript';
-                case 'python':
-                case 'py':
-                    return 'python';
-                case 'php':
-                    return 'php';
-                case 'html':
-                    return 'html';
-                case 'css':
-                    return 'css';
-                case 'java':
-                    return 'java';
-                case 'c#':
-                case 'csharp':
-                    return 'csharp';
-                case 'cpp':
-                case 'c++':
-                    return 'cpp';
-                case 'typescript':
-                case 'ts':
-                    return 'typescript';
-                case 'ruby':
-                    return 'ruby';
-                default:
-                    return 'plaintext';
-            }
-        }
-
-        // Update the Monaco editor initialization:
-        require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' } });
         require(['vs/editor/editor.main'], function () {
+            const programmingLanguage = '@Model.ProgrammingLanguage.Name'.toLowerCase().trim();
+
+            // Register supported languages
+            const supportedLanguages = {
+                'javascript': 'javascript',
+                'python': 'python',
+                'html': 'html',
+                'css': 'css',
+                'php': 'php',
+                'java': 'java',
+                'c#': 'csharp',
+                'csharp': 'csharp',
+                'cpp': 'cpp',
+                'c++': 'cpp',
+                'typescript': 'typescript',
+                'ruby': 'ruby'
+            };
+
+            const editorLanguage = supportedLanguages[programmingLanguage] || 'plaintext';
+            monaco.languages.register({ id: editorLanguage });
+
             editor = monaco.editor.create(document.getElementById('editor'), {
                 value: `@Html.Raw(Model.InitialCode.Replace("\n", "\\n").Replace("\r", "\\r").Replace("\"", "\\\""))`,
-                language: getLowerCaseLanguage('@Model.ProgrammingLanguage.Name'),
+                language: editorLanguage,
                 theme: 'vs-dark',
                 minimap: { enabled: false },
                 automaticLayout: true,
@@ -182,32 +343,43 @@
                 lineNumbers: 'on',
                 scrollBeyondLastLine: false,
                 wordWrap: 'on',
-                automaticLayout: true,
                 formatOnType: true,
                 formatOnPaste: true,
                 tabSize: 4,
                 autoIndent: true
             });
         });
-        // Add these functions at the top of your script section
-        function codeToRegexPattern(code) {
-            return code
-                // Remove whitespace differences
-                .trim()
-                .replace(/\s+/g, '\\s*')
-                // Escape special characters
-                .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-                // Make variable names flexible
-                .replace(/\blet\b/g, '(?:let|var|const)')
-                // Allow flexible function declarations
-                .replace(/\bfunction\b/g, '(?:function|const|let|var)?')
-                // Make semicolons optional
-                .replace(/;/g, ';?')
-                // Allow flexible spacing around operators
-                .replace(/([=+\-*/%<>!&|])/g, '\\s*$1\\s*');
-        }
 
-        // Update your submitSolution function
+        function codeToRegexPattern(code) {
+            // Remove any special regex characters from the code but preserve important syntax
+            return code
+                .trim()
+                // Preserve common programming constructs before escaping
+                .replace(/\/\/.*/g, '') // Remove single-line comments
+                .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
+                .replace(/\s+/g, '\\s+') // Convert whitespace to flexible whitespace
+                .replace(/\(/g, '\\(')
+                .replace(/\)/g, '\\)')
+                .replace(/\{/g, '\\{')
+                .replace(/\}/g, '\\}')
+                .replace(/\[/g, '\\[')
+                .replace(/\]/g, '\\]')
+                .replace(/\+/g, '\\+')
+                .replace(/\*/g, '\\*')
+                .replace(/\?/g, '\\?')
+                .replace(/\./g, '\\.')
+                .replace(/\^/g, '\\^')
+                .replace(/\$/g, '\\$')
+                .replace(/\|/g, '\\|')
+                // Make variable declarations flexible
+                .replace(/\bconst\b/g, '(?:const|let|var)')
+                .replace(/\blet\b/g, '(?:const|let|var)')
+                .replace(/\bvar\b/g, '(?:const|let|var)')
+                // Make function declarations flexible
+                .replace(/\bfunction\b/g, '(?:function|=>)')
+                // Make semicolons optional
+                .replace(/;/g, ';?');
+        }
         function submitSolution() {
             const code = editor.getValue();
             const verificationResults = document.getElementById('verificationResults');
@@ -217,16 +389,29 @@
                 const userCode = code.trim();
                 const expectedSolution = `@Html.Raw(Model.ExpectedSolution.Replace("\n", "\\n").Replace("\r", "\\r").Replace("\"", "\\\""))`.trim();
 
-                // Convert both codes to regex patterns
-                const userPattern = codeToRegexPattern(userCode);
-                const solutionPattern = codeToRegexPattern(expectedSolution);
+                if (!userCode) {
+                    verificationResults.innerHTML = `
+                        <div class="alert alert-warning">
+                            <strong>Empty Solution!</strong> Please write some code before submitting.
+                        </div>`;
+                    return;
+                }
 
-                // Create RegExp objects
-                const userRegex = new RegExp(userPattern, 'i');
-                const solutionRegex = new RegExp(solutionPattern, 'i');
+                // Normalize both codes (remove extra whitespace, comments, and convert to lowercase)
+                const normalizeCode = (code) => {
+                    return code
+                        .replace(/\/\/.*/g, '') // Remove single-line comments
+                        .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
+                        .replace(/\s+/g, ' ') // Normalize whitespace
+                        .toLowerCase()
+                        .trim();
+                };
 
-                // Check if either pattern matches the other code
-                const isCorrect = userRegex.test(expectedSolution) || solutionRegex.test(userCode);
+                const normalizedUser = normalizeCode(userCode);
+                const normalizedExpected = normalizeCode(expectedSolution);
+
+                // Compare normalized versions
+                const isCorrect = normalizedUser === normalizedExpected;
 
                 runAttempts++;
 
@@ -236,12 +421,13 @@
                             <strong>Congratulations!</strong> Your solution is correct!
                         </div>`;
                     saveProgress(true);
-                    // Show the next level button
                     nextLevelButton.style.display = 'block';
                 } else {
+                    // For more detailed feedback, you can compare specific parts
+                    const feedback = getFeedback(normalizedUser, normalizedExpected);
                     verificationResults.innerHTML = `
                         <div class="alert alert-warning">
-                            <strong>Not quite right.</strong> Try again! (Attempt ${runAttempts} of ${maxAttempts})
+                            <strong>Not quite right.</strong> ${feedback} (Attempt ${runAttempts} of ${maxAttempts})
                         </div>`;
                     saveProgress(false);
 
@@ -257,80 +443,84 @@
             }
         }
 
-        function getLowerCaseLanguage(language) {
-            return language.toLowerCase() === 'javascript' ? 'javascript' : 'plaintext';
+        function getFeedback(userCode, expectedCode) {
+            if (userCode.length < expectedCode.length * 0.5) {
+                return "Your solution seems too short.";
+            }
+            if (userCode.length > expectedCode.length * 1.5) {
+                return "Your solution seems too long.";
+            }
+
+            // Check if certain required keywords are missing
+            const requiredKeywords = expectedCode.match(/\b(function|class|if|for|while|return|var|let|const)\b/g) || [];
+            const missingKeywords = requiredKeywords.filter(keyword =>
+                !userCode.includes(keyword)
+            );
+
+            if (missingKeywords.length > 0) {
+                return `Your solution might be missing some important parts like: ${missingKeywords.join(', ')}`;
+            }
+
+            return "Try to match the expected solution more closely.";
         }
 
+        function clearOutput() {
+            document.getElementById('output').textContent = '// Your code output will appear here...';
+        }
         function runCode() {
             const code = editor.getValue();
+            const language = '@Model.ProgrammingLanguage.Name'.toLowerCase().trim();
             const outputElement = document.getElementById('output');
 
-            // Clear previous output
             outputElement.textContent = '';
 
-            try {
-                // Capture console.log output
-                const logs = [];
-                const originalLog = console.log;
-                console.log = (...args) => {
-                    logs.push(args.join(' '));
-                    originalLog.apply(console, args);
-                };
+            if (language === 'javascript') {
+                try {
+                    const logs = [];
+                    const originalLog = console.log;
+                    console.log = (...args) => {
+                        logs.push(args.join(' '));
+                        originalLog.apply(console, args);
+                    };
 
-                // Run the code
-                eval(code);
-
-                // Restore original console.log
-                console.log = originalLog;
-
-                // Display output
-                outputElement.textContent = logs.join('\n') || '// No output';
-                outputElement.className = 'bg-dark text-light p-3 rounded';
-            } catch (error) {
-                outputElement.textContent = `Error: ${error.message}`;
-                outputElement.className = 'bg-danger text-light p-3 rounded';
-            }
-        }
-
-        function submitSolution() {
-            const code = editor.getValue();
-            const verificationResults = document.getElementById('verificationResults');
-
-            try {
-                // Compare with expected solution
-                const userCode = code.trim();
-                const expectedSolution = `@Html.Raw(Model.ExpectedSolution.Replace("\n", "\\n").Replace("\r", "\\r").Replace("\"", "\\\""))`.trim();
-
-                // Simple comparison (you might want to make this more sophisticated)
-                const isCorrect = userCode === expectedSolution;
-
-                runAttempts++;
-
-                if (isCorrect) {
-                    verificationResults.innerHTML = `
-                                <div class="alert alert-success">
-                                    <strong>Congratulations!</strong> Your solution is correct!
-                                </div>`;
-                    saveProgress(true);
-                } else {
-                    verificationResults.innerHTML = `
-                                <div class="alert alert-warning">
-                                    <strong>Not quite right.</strong> Try again! (Attempt ${runAttempts} of ${maxAttempts})
-                                </div>`;
-                    saveProgress(false);
-
-                    if (runAttempts >= maxAttempts) {
-                        document.getElementById('solutionSection').style.display = 'block';
-                    }
+                    eval(code);
+                    console.log = originalLog;
+                    outputElement.textContent = logs.join('\n') || '// No output';
+                    outputElement.className = 'bg-dark text-light p-3 rounded';
+                } catch (error) {
+                    outputElement.textContent = `Error: ${error.message}`;
+                    outputElement.className = 'bg-danger text-light p-3 rounded';
                 }
-            } catch (error) {
-                verificationResults.innerHTML = `
-                            <div class="alert alert-danger">
-                                <strong>Error:</strong> ${error.message}
-                            </div>`;
+                return;
             }
+
+            if (language === 'html') {
+                const iframe = document.createElement('iframe');
+                iframe.style.width = '100%';
+                iframe.style.height = '300px';
+                iframe.style.border = '1px solid #ddd';
+                outputElement.innerHTML = '';
+                outputElement.appendChild(iframe);
+                iframe.contentDocument.open();
+                iframe.contentDocument.write(code);
+                iframe.contentDocument.close();
+                return;
+            }
+
+            if (language === 'python') {
+                outputElement.textContent = `Python code execution requires server-side processing.
+        Sample output format:
+        >>> your_code_here
+        output_would_appear_here`;
+                outputElement.className = 'bg-dark text-light p-3 rounded';
+                return;
+            }
+
+            outputElement.textContent = `Language '${language}' requires server-side execution.`;
+            outputElement.className = 'bg-warning text-dark p-3 rounded';
         }
-        // Add this to your existing JavaScript
+
+
         function goToNextLevel() {
             fetch(`/UserDashboard/GetNextLevel?currentLevelId=@Model.Id`)
                 .then(response => response.json())
@@ -339,7 +529,6 @@
                         if (data.hasNextLevel) {
                             window.location.href = `/UserDashboard/LevelDetails/${data.nextLevelId}`;
                         } else {
-                            // Show completion message
                             Swal.fire({
                                 title: 'Congratulations!',
                                 text: 'You\'ve completed all available levels!',
@@ -356,8 +545,8 @@
                 .catch(error => console.error('Error:', error));
         }
 
-        // Update the next level button to use this function
         document.getElementById('nextLevelButton').onclick = goToNextLevel;
+
         function saveProgress(isCompleted) {
             fetch('/UserDashboard/SaveProgress', {
                 method: 'POST',

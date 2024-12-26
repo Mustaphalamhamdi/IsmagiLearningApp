@@ -1,13 +1,199 @@
 ﻿@model IEnumerable<IsmagiLearningApp.Models.Difficulty>
 
-<h2>Difficulties</h2>
-<ul>
-    @foreach (var difficulty in Model)
-    {
-        <li>
-            <a asp-controller="UserDashboard" asp-action="Levels" asp-route-difficultyId="@difficulty.Id">
-                @difficulty.Name
-            </a>
-        </li>
+<div class="difficulty-container">
+    <div class="dashboard-header mb-4">
+        <h2 class="dashboard-title">Choose Your Level</h2>
+        <p class="dashboard-subtitle">Select the difficulty level that matches your experience</p>
+    </div>
+
+    <div class="row g-4 mb-5">
+        @if (Model != null && Model.Any())
+
+        {
+            @foreach (var difficulty in Model)
+
+            {
+                <div class="col-md-4 mb-4">
+                    <a asp-controller="UserDashboard"
+                       asp-action="Levels"
+                       asp-route-difficultyId="@difficulty.Id"
+                       class="difficulty-card-link">
+                        <div class="difficulty-card">
+                            <div class="difficulty-card-inner">
+                                <div class="difficulty-level-badge @difficulty.Name.ToLower()">
+                                    @difficulty.Name
+                                </div>
+                                <h3 class="difficulty-title">@difficulty.Name Level</h3>
+                                @{
+                                    var description = difficulty.Name.ToLower() switch
+
+                                    {
+                                        "beginner" => "Perfect for those just starting their coding journey. Learn the fundamentals and basic concepts.",
+                                        "intermediate" => "For learners with basic knowledge. Dive deeper into more complex programming concepts.",
+                                        "advanced" => "Master advanced topics and tackle challenging programming problems.",
+                                        "master" => "Expert-level content for those seeking to perfect their skills.",
+                                        _ => "Enhance your programming skills at this level."
+
+                                    };
+                                }
+                                <p class="difficulty-description">@description</p>
+                                <div class="start-learning-wrapper">
+                                    <span class="select-level-btn">
+                                        Start This Level
+                                        <i class="bi bi-arrow-right ms-2"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        }
+
+        else
+
+        {
+            <div class="col-12 text-center">
+                <p>No difficulty levels available at the moment.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .difficulty-container {
+        padding: 1rem 0;
     }
-</ul>
+
+    .dashboard-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .dashboard-subtitle {
+        font-size: 1.1rem;
+        color: #64748b;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .difficulty-card-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        height: 100%;
+    }
+
+    .difficulty-card {
+        height: 100%;
+        background: white;
+        border-radius: 1rem;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+    }
+
+    .difficulty-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        border-color: #6366f1;
+    }
+
+    .difficulty-card-inner {
+        padding: 1.5rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .difficulty-level-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+        color: white;
+    }
+
+    .difficulty-level-badge.beginner {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+    }
+
+    .difficulty-level-badge.intermediate {
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
+    }
+
+    .difficulty-level-badge.advanced {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .difficulty-level-badge.master {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    .difficulty-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: #0f172a;
+    }
+
+    .difficulty-description {
+        color: #64748b;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+    }
+
+    .start-learning-wrapper {
+        margin-top: auto;
+    }
+
+    .select-level-btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.75rem 1.25rem;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .difficulty-card:hover .select-level-btn {
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+
+    .select-level-btn i {
+        transition: transform 0.3s ease;
+    }
+
+    .difficulty-card:hover .select-level-btn i {
+        transform: translateX(3px);
+    }
+
+    @@media (max-width: 768px) {
+        .dashboard-title {
+            font-size: 2rem;
+        }
+
+        .difficulty-card {
+            margin-bottom: 1rem;
+        }
+
+        .difficulty-level-badge {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+        }
+    }
+</style>

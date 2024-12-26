@@ -7,11 +7,153 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/IsmagiLearningApp.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --background-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-color: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding: 0.5rem 0;
+        }
+
+        .nav-link {
+            color: var(--text-color) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            margin: 0 0.25rem;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+            color: var(--primary-color) !important;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after {
+            width: 80%;
+        }
+
+        main {
+            flex: 1 0 auto;
+            padding: 2rem 0;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1200px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
+        }
+
+        .footer {
+            background-color: var(--surface-color);
+            color: var(--text-muted);
+            padding: 2rem 0;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+
+        /* Bg shapes for visual interest */
+        .bg-shape {
+            position: fixed;
+            z-index: 0;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.1;
+        }
+
+        .bg-shape-1 {
+            top: -100px;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            background: var(--primary-color);
+        }
+
+        .bg-shape-2 {
+            bottom: -100px;
+            left: -100px;
+            width: 300px;
+            height: 300px;
+            background: var(--secondary-color);
+        }
+
+        @@media (max-width: 992px) {
+            .navbar-brand {
+                font-size: 1.25rem;
+            }
+            
+            .nav-link {
+                padding: 0.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Background shapes -->
+    <div class="bg-shape bg-shape-1"></div>
+    <div class="bg-shape bg-shape-2"></div>
+
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <!-- Views/Shared/_Layout.cshtml -->
+        <nav class="navbar navbar-expand-sm navbar-light">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">IsmagiLearningApp</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -21,20 +163,20 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         @if (User.Identity.IsAuthenticated)
                         {
                             @if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Admin" asp-action="Index">Admin Dashboard</a>
+                                    <a class="nav-link" asp-controller="Admin" asp-action="Index">Admin Dashboard</a>
                                 </li>
                             }
                             else
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="UserDashboard" asp-action="Index">My Learning</a>
+                                    <a class="nav-link" asp-controller="UserDashboard" asp-action="Index">My Learning</a>
                                 </li>
                             }
                         }
@@ -47,11 +189,11 @@
 
     <div class="container">
         <main role="main" class="pb-3">
-            @RenderBody()  <!-- This line is crucial! -->
+            @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted mt-auto">
         <div class="container">
             &copy; 2024 - IsmagiLearningApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>

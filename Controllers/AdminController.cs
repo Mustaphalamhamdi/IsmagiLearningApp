@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IsmagiLearningApp.Controllers
 {
+
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
@@ -102,6 +103,60 @@ namespace IsmagiLearningApp.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
+        }
+        // GET: Admin/EditLanguage/5
+        public async Task<IActionResult> EditLanguage(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var language = await _context.ProgrammingLanguages.FindAsync(id);
+            if (language == null)
+            {
+                return NotFound();
+            }
+
+            return View(language);
+        }
+
+        // POST: Admin/EditLanguage/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditLanguage(int id, [Bind("Id,Name,Description")] ProgrammingLanguage language)
+        {
+            if (id != language.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(language);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ProgrammingLanguageExists(language.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+            return View(language);
+        }
+
+        private bool ProgrammingLanguageExists(int id)
+        {
+            return _context.ProgrammingLanguages.Any(e => e.Id == id);
         }
 
         // Shows the interface for managing levels within a language
@@ -388,29 +443,88 @@ namespace IsmagiLearningApp.Controllers
             return Json(new { success = true });
         }
 
-        // Edit difficulty level
-        public async Task<IActionResult> EditDifficulty(int id)
+        // GET: Admin/EditDifficulty/5
+        public async Task<IActionResult> EditDifficulty(int? id)
         {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
             var difficulty = await _context.DifficultyLevels
                 .Include(d => d.ProgrammingLanguage)
                 .FirstOrDefaultAsync(d => d.Id == id);
 
             if (difficulty == null)
+            {
                 return NotFound();
+            }
 
             return View(difficulty);
         }
-
+        // POST: Admin/EditDifficulty/5
         [HttpPost]
-        public async Task<IActionResult> EditDifficulty(Difficulty difficulty)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditDifficulty(int id, Difficulty difficulty)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Update(difficulty);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(ManageDifficulties), new { languageId = difficulty.ProgrammingLanguageId });
+            if (id != difficulty.Id)
+            {   
+                return NotFound();
             }
-            return View(difficulty);
+
+            if (!ModelState.IsValid)
+            {
+                try
+                {
+                    // Get the existing difficulty with its relationships
+                    var existingDifficulty = await _context.DifficultyLevels
+                        .Include(d => d.ProgrammingLanguage)
+                        .FirstOrDefaultAsync(d => d.Id == id);
+
+                    if (existingDifficulty == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Update the properties
+                    existingDifficulty.Name = difficulty.Name;
+                    existingDifficulty.Description = difficulty.Description;
+                    existingDifficulty.DisplayOrder = difficulty.DisplayOrder;
+                    existingDifficulty.IsAvailable = difficulty.IsAvailable;
+
+                    _context.Update(existingDifficulty);
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(ManageDifficulties),
+                        new { languageId = existingDifficulty.ProgrammingLanguageId });
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!DifficultyExists(difficulty.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+
+            var difficultyWithLanguage = await _context.DifficultyLevels
+                .Include(d => d.ProgrammingLanguage)
+                .FirstOrDefaultAsync(d => d.Id == id);
+
+            if (difficultyWithLanguage == null)
+            {
+                return NotFound();
+            }
+
+            return View(difficultyWithLanguage);
+        }
+        private bool DifficultyExists(int id)
+        {
+            return _context.DifficultyLevels.Any(e => e.Id == id);
         }
         [HttpGet]
         public IActionResult CreateAdmin()
