@@ -13,6 +13,8 @@ namespace IsmagiLearningApp.Models
         [Required]
         public string UserId { get; set; }
 
+        [ForeignKey("UserId")]
+        public virtual IdentityUser User { get; set; }
         [Required]
         public int LevelId { get; set; }
 

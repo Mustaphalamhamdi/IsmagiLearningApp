@@ -78,7 +78,6 @@ namespace IsmagiLearningApp.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InitialCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OrderIndex")
@@ -152,11 +151,13 @@ namespace IsmagiLearningApp.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LevelId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserProgress");
                 });
@@ -400,7 +401,15 @@ namespace IsmagiLearningApp.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Level");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

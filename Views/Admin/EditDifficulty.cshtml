@@ -1,52 +1,57 @@
 ﻿@model Difficulty
-
-<div class="edit-difficulty-container mb-5">
-    <div class="dashboard-header mb-4">
+<div class="container mt-4">
+    <div class="dashboard-header text-center mb-4">
         <h2 class="dashboard-title">Edit Difficulty Level</h2>
-        <p class="dashboard-subtitle">Modify difficulty settings for @Model.ProgrammingLanguage.Name</p>
+        <p class="dashboard-subtitle">Modify difficulty settings for @Model.Name</p>
     </div>
 
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
+        <div class="col-md-8">
+            <div class="card edit-difficulty-card">
                 <div class="card-body">
                     <form asp-action="EditDifficulty" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
                         <input type="hidden" asp-for="Id" />
                         <input type="hidden" asp-for="ProgrammingLanguageId" />
 
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label asp-for="Name" class="form-label">Difficulty Name</label>
-                            <input asp-for="Name" class="form-control" required />
+                            <input asp-for="Name" class="form-control" required 
+                                   placeholder="Enter difficulty level name" />
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label asp-for="Description" class="form-label">Description</label>
-                            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                            <textarea asp-for="Description" class="form-control" rows="3" required 
+                                    placeholder="Describe what learners can expect at this difficulty level"></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label asp-for="DisplayOrder" class="form-label">Display Order</label>
-                            <input asp-for="DisplayOrder" class="form-control" type="number" required />
+                            <input asp-for="DisplayOrder" class="form-control" type="number" required min="1" />
                             <span asp-validation-for="DisplayOrder" class="text-danger"></span>
-                            <small class="text-muted">Lower numbers will be displayed first</small>
+                            <small class="text-muted mt-2 d-block">
+                                The order in which this difficulty appears in the list
+                            </small>
                         </div>
 
                         <div class="mb-4">
                             <div class="form-check form-switch">
                                 <input asp-for="IsAvailable" class="form-check-input" type="checkbox" />
-                                <label asp-for="IsAvailable" class="form-check-label">Available for Users</label>
+                                <label asp-for="IsAvailable" class="form-check-label">Available for learners</label>
                             </div>
+                            <small class="text-muted d-block mt-2">
+                                Toggle whether this difficulty level is visible to learners
+                            </small>
                         </div>
 
-                        <div class="d-flex justify-content-between">
-                            <a asp-action="ManageDifficulties"
-                               asp-route-languageId="@Model.ProgrammingLanguageId"
-                               class="btn btn-outline">
-                                Cancel
-                            </a>
+                        <div class="form-actions">
                             <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <a asp-action="ManageDifficulties" 
+                               asp-route-languageId="@Model.ProgrammingLanguageId" 
+                               class="btn btn-secondary">Cancel</a>
                         </div>
                     </form>
                 </div>
@@ -56,33 +61,12 @@
 </div>
 
 <style>
-    .edit-difficulty-container {
-        padding: 2rem 0;
-        min-height: calc(100vh - 260px);
-    }
-
-    .dashboard-header {
-        text-align: center;
-    }
-
-    .dashboard-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 1rem;
-    }
-
-    .dashboard-subtitle {
-        font-size: 1.1rem;
-        color: #64748b;
-    }
-
-    .card {
+    .edit-difficulty-card {
+        background: white;
         border-radius: 1rem;
         border: 1px solid #e2e8f0;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        animation: slideUp 0.5s ease-out;
     }
 
     .card-body {
@@ -92,6 +76,7 @@
     .form-label {
         font-weight: 500;
         color: #0f172a;
+        margin-bottom: 0.5rem;
     }
 
     .form-control {
@@ -104,18 +89,46 @@
     .form-control:focus {
         border-color: #6366f1;
         box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+        outline: none;
+    }
+
+    textarea.form-control {
+        min-height: 100px;
+    }
+
+    /* Custom switch styling */
+    .form-check.form-switch {
+        padding-left: 2.5rem;
     }
 
     .form-check-input {
         width: 3em;
         height: 1.5em;
+        margin-left: -2.5rem;
         background-color: #e2e8f0;
         border-color: #e2e8f0;
+        cursor: pointer;
     }
 
     .form-check-input:checked {
         background-color: #6366f1;
         border-color: #6366f1;
+    }
+
+    .form-check-input:focus {
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+    }
+
+    .form-check-label {
+        cursor: pointer;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
     }
 
     .btn {
@@ -136,15 +149,36 @@
         box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
     }
 
-    .btn-outline {
-        border: 1px solid #e2e8f0;
+    .btn-secondary {
         background: white;
+        border: 1px solid #e2e8f0;
         color: #64748b;
     }
 
-    .btn-outline:hover {
+    .btn-secondary:hover {
         border-color: #6366f1;
         color: #6366f1;
+    }
+
+    .text-danger {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .text-muted {
+        color: #64748b !important;
+    }
+
+    @@keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     @@media (max-width: 768px) {
@@ -152,14 +186,20 @@
             padding: 1.5rem;
         }
 
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
         .dashboard-title {
-            font-size: 2rem;
+            font-size: 1.75rem;
         }
     }
 </style>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

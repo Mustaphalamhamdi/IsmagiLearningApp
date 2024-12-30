@@ -1,0 +1,46 @@
+﻿@model IEnumerable<UserProgress>
+
+<div class="container mt-4">
+    <h2>User Progress Overview</h2>
+
+    <div class="card">
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Language</th>
+                        <th>Level</th>
+                        <th>Difficulty</th>
+                        <th>Status</th>
+                        <th>Attempts</th>
+                        <th>Completion Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var progress in Model)
+                    {
+                        <tr>
+                            <td>@progress.User.Email</td>
+                            <td>@progress.Level.ProgrammingLanguage.Name</td>
+                            <td>@progress.Level.Title</td>
+                            <td>@progress.Level.Difficulty.Name</td>
+                            <td>
+                                @if (progress.IsCompleted)
+                                {
+                                    <span class="badge bg-success">Completed</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">In Progress</span>
+                                }
+                            </td>
+                            <td>@progress.AttemptCount</td>
+                            <td>@progress.CompletionDate?.ToString("MM/dd/yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

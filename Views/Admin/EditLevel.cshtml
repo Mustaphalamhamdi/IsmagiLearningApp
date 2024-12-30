@@ -1,71 +1,220 @@
 ﻿@model IsmagiLearningApp.Models.Level
+<div class="container mt-4">
+    <div class="dashboard-header text-center mb-4">
+        <h2 class="dashboard-title">Edit Level</h2>
+        <p class="dashboard-subtitle">Modify level settings for @Model.Title</p>
+    </div>
 
-@{
-    ViewData["Title"] = "Edit Level";
-}
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card edit-level-card">
+                <div class="card-body">
+                    <form asp-action="EditLevel" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="ProgrammingLanguageId" />
 
-<h1>Edit Level</h1>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <!-- Basic Information -->
+                                <div class="form-section">
+                                    <h5 class="section-title">Basic Information</h5>
+                                    
+                                    <div class="mb-4">
+                                        <label asp-for="Title" class="form-label">Level Title</label>
+                                        <input asp-for="Title" class="form-control" required 
+                                               placeholder="Enter a descriptive title for this level" />
+                                        <span asp-validation-for="Title" class="text-danger"></span>
+                                    </div>
 
-<h4>Level</h4>
-<hr />
-<div class="row">
-    <div class="col-md-12">
-        <form asp-action="EditLevel" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
+                                    <div class="mb-4">
+                                        <label asp-for="DifficultyId" class="form-label">Difficulty Level</label>
+                                        <select asp-for="DifficultyId" asp-items="ViewBag.Difficulties" 
+                                                class="form-select" required>
+                                            <option value="">Select Difficulty Level</option>
+                                        </select>
+                                        <span asp-validation-for="DifficultyId" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label asp-for="Description" class="form-label">Description</label>
+                                        <textarea asp-for="Description" class="form-control" rows="4" required 
+                                                placeholder="Explain what will be learned in this level"></textarea>
+                                        <span asp-validation-for="Description" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label asp-for="OrderIndex" class="form-label">Level Order</label>
+                                        <input asp-for="OrderIndex" class="form-control" type="number" min="1" required />
+                                        <span asp-validation-for="OrderIndex" class="text-danger"></span>
+                                        <small class="text-muted mt-2 d-block">
+                                            Order in which this level appears within its difficulty
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <!-- Code Section -->
+                                <div class="form-section">
+                                    <h5 class="section-title">Code Settings</h5>
+                                    
+                                    <div class="mb-4">
+                                        <label asp-for="InitialCode" class="form-label">Initial Code (Optional)</label>
+                                        <textarea asp-for="InitialCode" class="form-control code-editor" rows="6"
+                                                placeholder="Starter code for the level (if any)"></textarea>
+                                        <span asp-validation-for="InitialCode" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label asp-for="ExpectedSolution" class="form-label">Expected Solution</label>
+                                        <textarea asp-for="ExpectedSolution" class="form-control code-editor" rows="6" required
+                                                placeholder="The correct solution for this level"></textarea>
+                                        <span asp-validation-for="ExpectedSolution" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label asp-for="Hints" class="form-label">Hints</label>
+                                        <textarea asp-for="Hints" class="form-control" rows="3"
+                                                placeholder="Provide helpful hints for learners"></textarea>
+                                        <span asp-validation-for="Hints" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <a asp-action="ManageLevels" asp-route-languageId="@Model.ProgrammingLanguageId" 
+                               class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <textarea asp-for="Description" class="form-control"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ProgrammingLanguageId" class="control-label"></label>
-                <input asp-for="ProgrammingLanguageId" class="form-control" readonly />
-                <span asp-validation-for="ProgrammingLanguageId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DifficultyId" class="control-label"></label>
-                <select asp-for="DifficultyId" class="form-control" asp-items="@(new SelectList(ViewBag.Difficulties, "Id", "Name"))"></select>
-                <span asp-validation-for="DifficultyId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="InitialCode" class="control-label"></label>
-                <textarea asp-for="InitialCode" class="form-control"></textarea>
-                <span asp-validation-for="InitialCode" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ExpectedSolution" class="control-label"></label>
-                <textarea asp-for="ExpectedSolution" class="form-control"></textarea>
-                <span asp-validation-for="ExpectedSolution" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Hints" class="control-label"></label>
-                <textarea asp-for="Hints" class="form-control"></textarea>
-                <span asp-validation-for="Hints" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="OrderIndex" class="control-label"></label>
-                <input asp-for="OrderIndex" class="form-control" />
-                <span asp-validation-for="OrderIndex" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="ManageLevels" asp-route-languageId="@Model.ProgrammingLanguageId">Back to List</a>
-</div>
+<style>
+    .edit-level-card {
+        background: white;
+        border-radius: 1rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        animation: slideUp 0.5s ease-out;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .section-title {
+        color: #0f172a;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #0f172a;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control, .form-select {
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+        outline: none;
+    }
+
+    .code-editor {
+        font-family: 'Consolas', monospace;
+        background-color: #f8fafc;
+    }
+
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .text-muted {
+        color: #64748b !important;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border: none;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn-secondary {
+        background: white;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+    }
+
+    .btn-secondary:hover {
+        border-color: #6366f1;
+        color: #6366f1;
+    }
+
+    @@keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        .dashboard-title {
+            font-size: 1.75rem;
+        }
+    }
+</style>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

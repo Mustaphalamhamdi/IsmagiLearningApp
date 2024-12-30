@@ -1,38 +1,178 @@
 ﻿@model ProgrammingLanguage
-
 <div class="container mt-4">
-    <h2>Create New Programming Language</h2>
+    <div class="dashboard-header text-center mb-4">
+        <h2 class="dashboard-title">Create New Programming Language</h2>
+        <p class="dashboard-subtitle">Add a new programming language to the learning platform</p>
+    </div>
 
-    <form asp-action="CreateLanguage">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="mb-3">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card create-language-card">
+                <div class="card-body">
+                    <form asp-action="CreateLanguage" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+
+                        <div class="mb-4">
                             <label asp-for="Name" class="form-label">Language Name</label>
-                            <input asp-for="Name" class="form-control" />
+                            <input asp-for="Name" class="form-control" placeholder="Enter programming language name" required />
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label asp-for="Description" class="form-label">Description</label>
-                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                            <textarea asp-for="Description" class="form-control" rows="3"
+                                      placeholder="Describe what this programming language is about" required></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label asp-for="DisplayOrder" class="form-label">Display Order</label>
-                            <input asp-for="DisplayOrder" class="form-control" type="number" />
+                            <input asp-for="DisplayOrder" class="form-control" type="number" min="1" required />
                             <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+                            <small class="text-muted mt-2 d-block">
+                                Determines the order in which languages are displayed
+                            </small>
                         </div>
 
-                        <div class="mt-4">
+                        <div class="form-actions">
                             <button type="submit" class="btn btn-primary">Create Language</button>
-                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                            <a asp-action="Index" class="btn btn-secondary">Back to Dashboard</a>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
-    </form>
+    </div>
 </div>
+
+<style>
+    .create-language-card {
+        background: white;
+        border-radius: 1rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        animation: slideUp 0.5s ease-out;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #0f172a;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+        outline: none;
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .text-muted {
+        color: #64748b !important;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border: none;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn-secondary {
+        background: white;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+    }
+
+    .btn-secondary:hover {
+        border-color: #6366f1;
+        color: #6366f1;
+    }
+
+    /* Validation Styling */
+    .text-danger {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .validation-summary-errors {
+        background: #fef2f2;
+        border: 1px solid #fee2e2;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .validation-summary-errors ul {
+        margin: 0;
+        padding-left: 1.5rem;
+    }
+
+    @@keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        .dashboard-title {
+            font-size: 1.75rem;
+        }
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

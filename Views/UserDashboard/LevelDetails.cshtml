@@ -8,39 +8,28 @@
         : string.Empty;
 }
 
-<div class="level-details-container mt-4">
-    <div class="row g-4">
+<div class="container-fluid mt-4">
+    <div class="row">
         <!-- Left side - Instructions and Description -->
         <div class="col-md-4">
-            <div class="instruction-card mb-4">
-                <div class="card-header">
-                    <h4 class="mb-0">@Model.Title</h4>
+            <div class="card mb-4">
+                <div class="card-header bg-primary">
+                    <h4 class="mb-0 text-white">@Model.Title</h4> <!-- Explicitly set header text to white -->
                 </div>
-                <div class="card-body">
-                    <div class="mb-4">
-                        <h5 class="section-title">Description</h5>
-                        <p class="description-text">@Model.Description</p>
-                    </div>
+                <div class="card-body text-dark">
+                    <!-- Explicitly set body text to dark -->
+                    <h5 class="text-dark">Description:</h5>
+                    <p>@Model.Description</p>
 
-                    <div class="requirements-section mb-4">
-                        <h5 class="section-title">Task Requirements</h5>
-                        <div class="requirements-badges">
-                            <span class="requirement-badge language">
-                                <i class="bi bi-code-slash"></i>
-                                @Model.ProgrammingLanguage.Name
-                            </span>
-                            <span class="requirement-badge difficulty">
-                                <i class="bi bi-speedometer2"></i>
-                                @Model.Difficulty.Name
-                            </span>
-                        </div>
-                    </div>
+                    <h5 class="mt-4 text-dark">Task Requirements:</h5>
+                    <ul>
+                        <li>Language: @Model.ProgrammingLanguage.Name</li>
+                        <li>Difficulty: @Model.Difficulty.Name</li>
+                    </ul>
 
-                    <div class="hints-section">
-                        <h5 class="section-title">
-                            <i class="bi bi-lightbulb"></i> Hints
-                        </h5>
-                        <p class="hints-text">@Model.Hints</p>
+                    <div class="alert alert-info mt-4">
+                        <h5 class="alert-heading text-dark">💡 Hints:</h5>
+                        <p class="mb-0">@Model.Hints</p>
                     </div>
                 </div>
             </div>
@@ -158,9 +147,9 @@
         transition: all 0.3s ease;
     }
 
-    .card:hover {
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    }
+        .card:hover {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
 
     .card-header {
         background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
@@ -199,13 +188,13 @@
         color: white;
     }
 
-    .requirement-badge.language {
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    }
+        .requirement-badge.language {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
 
-    .requirement-badge.difficulty {
-        background: linear-gradient(135deg, var(--warning-color), var(--danger-color));
-    }
+        .requirement-badge.difficulty {
+            background: linear-gradient(135deg, var(--warning-color), var(--danger-color));
+        }
 
     /* Progress Section */
     .progress-item {
@@ -266,8 +255,8 @@
 
     /* Output Display */
     .output-display {
-        background: #1a1a1a;
-        color: #ffffff;
+        background: #ffffff;
+        color: ##1a1a1a;
         padding: 1rem;
         border-radius: 0.5rem;
         min-height: 100px;
@@ -339,7 +328,7 @@
                 theme: 'vs-dark',
                 minimap: { enabled: false },
                 automaticLayout: true,
-                fontSize: 14,
+                fontSize: 20,
                 lineNumbers: 'on',
                 scrollBeyondLastLine: false,
                 wordWrap: 'on',
@@ -464,6 +453,20 @@
             return "Try to match the expected solution more closely.";
         }
 
+        function saveProgress(isCompleted) {
+            fetch('/UserDashboard/SaveProgress', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': '@antiforgeryToken'
+                },
+                body: JSON.stringify({
+                    levelId: @Model.Id,
+                    isCompleted: isCompleted,
+                    code: editor.getValue()
+                })
+            });
+        }
         function clearOutput() {
             document.getElementById('output').textContent = '// Your code output will appear here...';
         }
@@ -546,24 +549,5 @@
         }
 
         document.getElementById('nextLevelButton').onclick = goToNextLevel;
-
-        function saveProgress(isCompleted) {
-            fetch('/UserDashboard/SaveProgress', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': '@antiforgeryToken'
-                },
-                body: JSON.stringify({
-                    levelId: @Model.Id,
-                    isCompleted: isCompleted,
-                    code: editor.getValue()
-                })
-            });
-        }
-
-        function clearOutput() {
-            document.getElementById('output').textContent = '// Your code output will appear here...';
-        }
     </script>
 }

@@ -205,7 +205,7 @@ namespace IsmagiLearningApp.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProgrammingLanguageId = table.Column<int>(type: "int", nullable: false),
                     DifficultyId = table.Column<int>(type: "int", nullable: false),
-                    InitialCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    InitialCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ExpectedSolution = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Hints = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     OrderIndex = table.Column<int>(type: "int", nullable: false)
@@ -217,12 +217,14 @@ namespace IsmagiLearningApp.Migrations
                         name: "FK_Levels_DifficultyLevels_DifficultyId",
                         column: x => x.DifficultyId,
                         principalTable: "DifficultyLevels",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Levels_ProgrammingLanguages_ProgrammingLanguageId",
                         column: x => x.ProgrammingLanguageId,
                         principalTable: "ProgrammingLanguages",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -231,7 +233,7 @@ namespace IsmagiLearningApp.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     LevelId = table.Column<int>(type: "int", nullable: false),
                     IsCompleted = table.Column<bool>(type: "bit", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -242,10 +244,17 @@ namespace IsmagiLearningApp.Migrations
                 {
                     table.PrimaryKey("PK_UserProgress", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_UserProgress_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_UserProgress_Levels_LevelId",
                         column: x => x.LevelId,
                         principalTable: "Levels",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -306,6 +315,11 @@ namespace IsmagiLearningApp.Migrations
                 name: "IX_UserProgress_LevelId",
                 table: "UserProgress",
                 column: "LevelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserProgress_UserId",
+                table: "UserProgress",
+                column: "UserId");
         }
 
         /// <inheritdoc />

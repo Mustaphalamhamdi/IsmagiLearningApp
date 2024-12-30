@@ -26,8 +26,7 @@ namespace IsmagiLearningApp.Models
         [ForeignKey("DifficultyId")]
         public virtual Difficulty Difficulty { get; set; }
 
-        [Required]
-        public string InitialCode { get; set; }
+        public string? InitialCode { get; set; }
 
         [Required]
         public string ExpectedSolution { get; set; }

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IsmagiLearningApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241224233305_InitialCreate")]
+    [Migration("20241226195354_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -81,7 +81,6 @@ namespace IsmagiLearningApp.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InitialCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OrderIndex")
@@ -155,11 +154,13 @@ namespace IsmagiLearningApp.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LevelId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserProgress");
                 });
@@ -382,13 +383,12 @@ namespace IsmagiLearningApp.Migrations
                     b.HasOne("IsmagiLearningApp.Models.Difficulty", "Difficulty")
                         .WithMany("Levels")
                         .HasForeignKey("DifficultyId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("IsmagiLearningApp.Models.ProgrammingLanguage", "ProgrammingLanguage")
                         .WithMany("Levels")
                         .HasForeignKey("ProgrammingLanguageId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Difficulty");
@@ -401,10 +401,18 @@ namespace IsmagiLearningApp.Migrations
                     b.HasOne("IsmagiLearningApp.Models.Level", "Level")
                         .WithMany()
                         .HasForeignKey("LevelId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Level");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

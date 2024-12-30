@@ -35,6 +35,45 @@ namespace IsmagiLearningApp.Controllers
             return View(languages);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> SaveProgress([FromBody] SaveProgressRequest request)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var progress = await _context.UserProgress
+                .FirstOrDefaultAsync(up => up.UserId == user.Id && up.LevelId == request.LevelId);
+
+            if (progress == null)
+            {
+                progress = new UserProgress
+                {
+                    UserId = user.Id,
+                    LevelId = request.LevelId,
+                    StartDate = DateTime.Now,
+                    AttemptCount = 1
+                };
+                _context.UserProgress.Add(progress);
+            }
+            else
+            {
+                progress.AttemptCount++;
+            }
+
+            if (request.IsCompleted && !progress.IsCompleted)
+            {
+                progress.IsCompleted = true;
+                progress.CompletionDate = DateTime.Now;
+            }
+
+            await _context.SaveChangesAsync();
+            return Json(new { success = true });
+        }
+
+        public class SaveProgressRequest
+        {
+            public int LevelId { get; set; }
+            public bool IsCompleted { get; set; }
+        }
+
         public async Task<IActionResult> Difficulties(int languageId)
         {
             // Load the programming language with its difficulties
@@ -92,6 +131,19 @@ namespace IsmagiLearningApp.Controllers
 
             return View(level);
         }
+        public async Task<IActionResult> Progress()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var progress = await _context.UserProgress
+                .Include(up => up.Level)
+                    .ThenInclude(l => l.ProgrammingLanguage)
+                .Include(up => up.Level.Difficulty)
+                .Where(up => up.UserId == user.Id)
+                .OrderByDescending(up => up.CompletionDate)
+                .ToListAsync();
+
+            return View(progress);
+        }
         public async Task<IActionResult> GetNextLevel(int currentLevelId)
         {
             var currentLevel = await _context.Levels
@@ -146,5 +198,6 @@ namespace IsmagiLearningApp.Controllers
                 nextLevelId = nextLevel.Id
             });
         }
+        
     }
 }

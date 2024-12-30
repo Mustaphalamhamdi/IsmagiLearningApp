@@ -53,26 +53,26 @@
             margin: 0 0.25rem;
         }
 
-        .nav-link:hover {
-            transform: translateY(-2px);
-            color: var(--primary-color) !important;
-        }
+            .nav-link:hover {
+                transform: translateY(-2px);
+                color: var(--primary-color) !important;
+            }
 
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 50%;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            transition: all 0.3s ease;
-            transform: translateX(-50%);
-        }
+            .nav-link::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: 0;
+                left: 50%;
+                background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+                transition: all 0.3s ease;
+                transform: translateX(-50%);
+            }
 
-        .nav-link:hover::after {
-            width: 80%;
-        }
+            .nav-link:hover::after {
+                width: 80%;
+            }
 
         main {
             flex: 1 0 auto;
@@ -98,10 +98,10 @@
             border: none;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
-        }
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
+            }
 
         .footer {
             background-color: var(--surface-color);
@@ -140,7 +140,7 @@
             .navbar-brand {
                 font-size: 1.25rem;
             }
-            
+
             .nav-link {
                 padding: 0.5rem;
             }
@@ -163,8 +163,8 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+
                         @if (User.Identity.IsAuthenticated)
                         {
                             @if (User.IsInRole("Admin"))
@@ -172,11 +172,17 @@
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Admin" asp-action="Index">Admin Dashboard</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Admin" asp-action="UserProgress">User Progress</a>
+                                </li>
                             }
                             else
                             {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="UserDashboard" asp-action="Index">My Learning</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="UserDashboard" asp-action="Progress">My Progress</a>
                                 </li>
                             }
                         }
