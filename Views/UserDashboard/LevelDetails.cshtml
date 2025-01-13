@@ -7,7 +7,7 @@
         ? Antiforgery.GetAndStoreTokens(HttpContextAccessor.HttpContext).RequestToken
         : string.Empty;
 }
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <div class="container-fluid mt-4">
     <div class="row">
         <!-- Left side - Instructions and Description -->
@@ -93,16 +93,6 @@
                     <pre id="output" class="output-display">// Your code output will appear here...</pre>
                 </div>
             </div>
-
-            <div class="verification-section card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">Verification Results</h5>
-                </div>
-                <div class="card-body">
-                    <div id="verificationResults"></div>
-                </div>
-            </div>
-
             <div id="solutionSection" class="solution-section card mb-4" style="display: none;">
                 <div class="card-header">
                     <h5 class="mb-0">Solution Reference</h5>
@@ -117,7 +107,6 @@
                 <a asp-action="LevelDetails"
                    asp-route-levelId="@(Model.Id + 1)"
                    class="btn btn-next">
-                    Continue to Next Level
                     <i class="bi bi-arrow-right"></i>
                 </a>
             </div>
@@ -291,6 +280,8 @@
 </style>
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         let editor;
         let runAttempts = 0;
@@ -375,60 +366,66 @@
             const nextLevelButton = document.getElementById('nextLevelButton');
 
             try {
-                const userCode = code.trim();
-                const expectedSolution = `@Html.Raw(Model.ExpectedSolution.Replace("\n", "\\n").Replace("\r", "\\r").Replace("\"", "\\\""))`.trim();
-
-                if (!userCode) {
-                    verificationResults.innerHTML = `
-                        <div class="alert alert-warning">
-                            <strong>Empty Solution!</strong> Please write some code before submitting.
-                        </div>`;
+                if (!code.trim()) {
+                    Swal.fire({
+                        title: 'Empty Solution',
+                        text: 'Please write some code before submitting.',
+                        icon: 'warning'
+                    });
                     return;
                 }
 
-                // Normalize both codes (remove extra whitespace, comments, and convert to lowercase)
                 const normalizeCode = (code) => {
                     return code
-                        .replace(/\/\/.*/g, '') // Remove single-line comments
-                        .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
-                        .replace(/\s+/g, ' ') // Normalize whitespace
+                        .replace(/\/\/.*/g, '')
+                        .replace(/\/\*[\s\S]*?\*\//g, '')
+                        .replace(/\s+/g, ' ')
                         .toLowerCase()
                         .trim();
                 };
 
+                const userCode = code.trim();
+                const expectedSolution = `@Html.Raw(Model.ExpectedSolution.Replace("\n", "\\n").Replace("\r", "\\r").Replace("\"", "\\\""))`.trim();
                 const normalizedUser = normalizeCode(userCode);
                 const normalizedExpected = normalizeCode(expectedSolution);
-
-                // Compare normalized versions
                 const isCorrect = normalizedUser === normalizedExpected;
-
                 runAttempts++;
 
                 if (isCorrect) {
-                    verificationResults.innerHTML = `
-                        <div class="alert alert-success">
-                            <strong>Congratulations!</strong> Your solution is correct!
-                        </div>`;
+                    Swal.fire({
+                        title: 'Congratulations!',
+                        text: 'Your solution is correct!',
+                        icon: 'success',
+                        showCancelButton: true,
+                        confirmButtonText: 'Next Level',
+                        cancelButtonText: 'Stay Here'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = nextLevelButton.querySelector('a').href;
+                        }
+                    });
                     saveProgress(true);
                     nextLevelButton.style.display = 'block';
                 } else {
-                    // For more detailed feedback, you can compare specific parts
                     const feedback = getFeedback(normalizedUser, normalizedExpected);
-                    verificationResults.innerHTML = `
-                        <div class="alert alert-warning">
-                            <strong>Not quite right.</strong> ${feedback} (Attempt ${runAttempts} of ${maxAttempts})
-                        </div>`;
-                    saveProgress(false);
+                    Swal.fire({
+                        title: 'Not Quite Right',
+                        text: `${feedback} (Attempt ${runAttempts} of ${maxAttempts})`,
+                        icon: 'warning',
+                        confirmButtonText: 'Try Again'
+                    });
 
+                    saveProgress(false);
                     if (runAttempts >= maxAttempts) {
                         document.getElementById('solutionSection').style.display = 'block';
                     }
                 }
             } catch (error) {
-                verificationResults.innerHTML = `
-                    <div class="alert alert-danger">
-                        <strong>Error:</strong> ${error.message}
-                    </div>`;
+                Swal.fire({
+                    title: 'Error',
+                    text: error.message,
+                    icon: 'error'
+                });
             }
         }
 

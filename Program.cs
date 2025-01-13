@@ -16,9 +16,8 @@ namespace IsmagiLearningApp
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            // Add Identity
             builder.Services.AddDefaultIdentity<IdentityUser>()
-                .AddRoles<IdentityRole>()  // Add this line to enable roles
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             var app = builder.Build();

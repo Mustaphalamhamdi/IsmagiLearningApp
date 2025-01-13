@@ -309,55 +309,51 @@ namespace IsmagiLearningApp.Controllers
 
             return View(level);
         }
-
+        // GET
         public async Task<IActionResult> EditLevel(int id)
         {
             var level = await _context.Levels
                 .Include(l => l.ProgrammingLanguage)
                 .FirstOrDefaultAsync(l => l.Id == id);
 
-            if (level == null)
-                return NotFound();
+            if (level == null) return NotFound();
 
             var language = await _context.ProgrammingLanguages
                 .Include(p => p.DifficultyLevels)
                 .FirstOrDefaultAsync(p => p.Id == level.ProgrammingLanguageId);
 
-            if (language == null || language.DifficultyLevels == null)
-                return NotFound();
+            if (language == null || language.DifficultyLevels == null) return NotFound();
 
             ViewBag.Language = language;
-            ViewBag.Difficulties = language.DifficultyLevels
-                .Where(d => d.IsAvailable)
-                .OrderBy(d => d.DisplayOrder)
-                .ToList();
+            ViewBag.Difficulties = new SelectList(
+                language.DifficultyLevels
+                    .Where(d => d.IsAvailable)
+                    .OrderBy(d => d.DisplayOrder),
+                "Id", "Name", level.DifficultyId
+            );
 
             return View(level);
         }
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditLevel(Level level)
+        public async Task<IActionResult> EditLevel(int id, Level level)
         {
+            if (id != level.Id)
+                return NotFound();
+
             if (!ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(level);
+                    _context.Entry(level).State = EntityState.Modified;
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(ManageLevels), new { languageId = level.ProgrammingLanguageId });
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_context.Levels.Any(e => e.Id == level.Id))
-                    {
+                    if (!LevelExists(level.Id))
                         return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
             }
 
@@ -365,19 +361,19 @@ namespace IsmagiLearningApp.Controllers
                 .Include(p => p.DifficultyLevels)
                 .FirstOrDefaultAsync(p => p.Id == level.ProgrammingLanguageId);
 
-            if (language == null || language.DifficultyLevels == null)
-                return NotFound();
-
             ViewBag.Language = language;
-            ViewBag.Difficulties = language.DifficultyLevels
-                .Where(d => d.IsAvailable)
-                .OrderBy(d => d.DisplayOrder)
-                .ToList();
+            ViewBag.Difficulties = new SelectList(
+                language.DifficultyLevels.Where(d => d.IsAvailable).OrderBy(d => d.DisplayOrder),
+                "Id", "Name", level.DifficultyId
+            );
 
             return View(level);
         }
 
-
+        private bool LevelExists(int id)
+        {
+            return _context.Levels.Any(e => e.Id == id);
+        }
         [HttpGet]
         public async Task<IActionResult> DeleteLevel(int id)
         {

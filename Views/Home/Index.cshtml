@@ -38,6 +38,15 @@
         </div>
         <div class="col-lg-6 d-none d-lg-block">
             <div class="hero-image">
+                <!-- Lottie Animation -->
+                <lottie-player 
+                    src="https://assets10.lottiefiles.com/packages/lf20_k1o8xnbd.json" 
+                    background="transparent" 
+                    speed="1" 
+                    style="width: 100%; height: auto;" 
+                    loop 
+                    autoplay>
+                </lottie-player>
             </div>
         </div>
     </div>
@@ -115,7 +124,7 @@
         padding: 2rem;
     }
 
-    .hero-image img {
+    .hero-image lottie-player {
         border-radius: 1rem;
         box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s ease;
@@ -153,3 +162,5 @@
         }
     }
 </style>
+
+<script src="https://unpkg.com/@@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
