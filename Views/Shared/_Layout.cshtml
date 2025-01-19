@@ -3,168 +3,228 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - IsmagiLearningApp</title>
+    <title>@ViewData["Title"] - Ismagi E-Learning</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/IsmagiLearningApp.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://use.typekit.net/xyg6fou.css">
+
+
+
     <style>
+        @@font-face {
+            font-family: "termina", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        @@font-face {
+            font-family: "termina", sans-serif;
+            font-weight: 700;
+            font-style: normal;
+        }
+
         :root {
-            --primary-color: #6366f1;
-            --secondary-color: #8b5cf6;
-            --background-color: #f8fafc;
+            --primary-color: #0A0A0A;
+            --secondary-color: #1A1A1A;
+            --accent-color: #004791;
+            --background-color: #ffffff;
             --surface-color: #ffffff;
-            --text-color: #0f172a;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
+            --text-color: #6B7280;
+            --text-muted: #6B7280;
+            --border-color: #000000;
         }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'termina', sans-serif;
             background-color: var(--background-color);
             color: var(--text-color);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            line-height: 1.6;
         }
 
         .navbar {
-            background-color: var(--surface-color);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            padding: 1.5rem 0;
+            position: absolute;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
         }
+
 
         .navbar-brand {
             font-weight: 700;
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            padding: 0.5rem 0;
+            font-size: 1.25rem;
+            color: var(--primary-color);
+            letter-spacing: -0.025em;
         }
 
+            .navbar-brand img {
+                height: 80px;
+                width: auto;
+                transition: transform 0.3s ease;
+            }
+
+            .navbar-brand:hover img {
+                transform: scale(1.05);
+            }
+
         .nav-link {
-            color: var(--text-color) !important;
+            font-size: 0.9375rem;
             font-weight: 500;
+            color: var(--text-color) !important;
             padding: 0.5rem 1rem;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             position: relative;
-            margin: 0 0.25rem;
+            opacity: 0.8;
         }
 
             .nav-link:hover {
-                transform: translateY(-2px);
-                color: var(--primary-color) !important;
+                opacity: 1;
+                color: var(--accent-color) !important;
             }
 
             .nav-link::after {
                 content: '';
                 position: absolute;
-                width: 0;
-                height: 2px;
                 bottom: 0;
-                left: 50%;
-                background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-                transition: all 0.3s ease;
-                transform: translateX(-50%);
+                left: 1rem;
+                right: 1rem;
+                height: 2px;
+                background-color: var(--accent-color);
+                transform: scaleX(0);
+                transition: transform 0.2s ease;
             }
 
             .nav-link:hover::after {
-                width: 80%;
+                transform: scaleX(1);
             }
 
         main {
+            margin-top: 80px;
             flex: 1 0 auto;
-            padding: 2rem 0;
+            padding: 4rem 0;
             position: relative;
         }
 
         .container {
-            max-width: 1200px;
-            position: relative;
-            z-index: 1;
+            max-width: 1280px;
+            padding: 0 2rem;
         }
 
         .btn {
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1.5rem;
             font-weight: 500;
+            font-size: 0.9375rem;
             border-radius: 0.5rem;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            letter-spacing: -0.01em;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background-color: var(--primary-color);
             border: none;
+            color: white;
         }
 
             .btn-primary:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
+                background-color: var(--secondary-color);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             }
 
         .footer {
-            background-color: var(--surface-color);
+            background-color: var(--background-color);
             color: var(--text-muted);
-            padding: 2rem 0;
+            padding: 4rem 0;
             border-top: 1px solid var(--border-color);
             margin-top: auto;
         }
 
-        /* Bg shapes for visual interest */
-        .bg-shape {
+            .footer a {
+                color: var(--text-color);
+                text-decoration: none;
+                transition: color 0.2s ease;
+            }
+
+                .footer a:hover {
+                    color: var(--accent-color);
+                }
+
+        .background-grid {
             position: fixed;
-            z-index: 0;
-            border-radius: 50%;
-            filter: blur(80px);
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            background-image: linear-gradient(var(--border-color) 1px, transparent 1px), linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+            background-size: 50px 50px;
             opacity: 0.1;
-        }
-
-        .bg-shape-1 {
-            top: -100px;
-            right: -100px;
-            width: 400px;
-            height: 400px;
-            background: var(--primary-color);
-        }
-
-        .bg-shape-2 {
-            bottom: -100px;
-            left: -100px;
-            width: 300px;
-            height: 300px;
-            background: var(--secondary-color);
+            z-index: -1;
         }
 
         @@media (max-width: 992px) {
+            .navbar {
+                padding: 1rem 0;
+            }
+
             .navbar-brand {
-                font-size: 1.25rem;
+                font-size: 1.125rem;
             }
 
             .nav-link {
                 padding: 0.5rem;
             }
+
+            main {
+                margin-top: 64px;
+                padding: 2rem 0;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+        }
+
+        .auth-buttons .btn {
+            margin-left: 0.5rem;
+        }
+
+        .navbar-toggler {
+            border: none;
+            padding: 0.5rem;
+        }
+
+            .navbar-toggler:focus {
+                box-shadow: none;
+            }
+
+        .navbar-toggler-icon {
+            width: 1.25em;
+            height: 1.25em;
         }
     </style>
 </head>
 <body>
-    <!-- Background shapes -->
-    <div class="bg-shape bg-shape-1"></div>
-    <div class="bg-shape bg-shape-2"></div>
+    <div class="background-grid"></div>
 
     <header>
         <nav class="navbar navbar-expand-sm navbar-light">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">IsmagiLearningApp</a>
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/logo.png" alt="IsmagiE-Learning" />
+                </a>
+
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                        </li>
-
                         @if (User.Identity.IsAuthenticated)
                         {
                             @if (User.IsInRole("Admin"))
@@ -187,27 +247,44 @@
                             }
                         }
                     </ul>
-                    <partial name="_LoginPartial" />
+                    <div class="auth-buttons">
+                        <partial name="_LoginPartial" />
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
 
     <div class="container">
-        <main role="main" class="pb-3">
+        <main role="main">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted mt-auto">
+    <footer class="footer">
         <div class="container">
-            &copy; 2024 - IsmagiLearningApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="d-flex justify-content-between align-items-center">
+                <div>&copy; 2024 IsmagiLearningApp</div>
+                <div>
+                    <a asp-area="" asp-controller="Home" asp-action="Privacy" class="ms-3">Privacy Policy</a>
+                </div>
+            </div>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        window.addEventListener('scroll', function () {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 10) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
